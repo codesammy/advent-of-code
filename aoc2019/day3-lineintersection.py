@@ -1,4 +1,7 @@
-from util import read_file
+import sys
+sys.path.append('../')
+
+from util import read_file, assert_equals
 
 lines = read_file()
 
@@ -127,11 +130,6 @@ def minimal_signal_delay(wire1, wire2):
         #print("temp delay = %s" % temp_delay)
         delay = min(delay, temp_delay)
     return delay
-
-# util
-def assert_equals(actual, expected):
-    if (actual != expected):
-        raise(Exception("%s was not %s" % (actual, expected)))
 
 assert(Point(1,2).distance(Point(0,0)) == 3)
 assert_equals(Line(Point(3,5),Point(3,2)).index(Point(3,3)), 2)
