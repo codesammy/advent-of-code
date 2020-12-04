@@ -13,8 +13,6 @@ class Passport:
     pid_pattern = re.compile("[0-9]{9}")
 
     def apply(self, line):
-        if not self.keyvalue_pattern.findall(line):
-            print("oooooooooooooooooooops")
         for key, value in self.keyvalue_pattern.findall(line):
             setattr(self, key, value)
 
@@ -28,7 +26,6 @@ class Passport:
     def is_valid1(self):
         for f in ['byr','iyr','eyr','hgt','hcl','ecl','pid']:
             if hasattr(self, f) == False:
-                print("attr %s missing" % f)
                 return False
         return True
 
@@ -36,40 +33,30 @@ class Passport:
         if not self.is_valid1():
             return False
         if not (int(self.byr) >= 1920 and int(self.byr) <= 2002):
-            print("byr %s is not [1920,2002]" % self.byr)
             return False
         if not (int(self.iyr) >= 2010 and int(self.iyr) <= 2020):
-            print("iyr %s is not [2010,2020]" % self.iyr)
             return False
         if not (int(self.eyr) >= 2020 and int(self.eyr) <= 2030):
-            print("eyr %s is not [2020,2030]" % self.eyr)
             return False
         if not self.hcl_pattern.fullmatch(self.hcl):
-            print("hcl %s does not match %s" %(self.hcl, self.hcl_pattern))
             return False
         m = self.hgt_pattern.fullmatch(self.hgt)
         if m == None:
-            print("hgt %s does not match %s" %(self.hgt, self.hgt_pattern))
             return False
         else:
             hgt, unit = m.groups()
             hgt = int(hgt)
             if unit == "cm":
                 if not (hgt >= 150 and hgt <= 193):
-                    print("hgt %s is not [150,193]"%(self.hgt))
                     return False
             if unit == "in":
                 if not (hgt >= 59 and hgt <= 76):
-                    print("hgt %s is not [59,76]"%(self.hgt))
                     return False
         ecl = ['amb','blu','brn','gry','grn','hzl','oth']
         if self.ecl not in ecl:
-            print("ecl %s is not in %s"%(self.ecl, ecl))
             return False
         if not self.pid_pattern.fullmatch(self.pid):
-            print("pid %s does match %s" %(self.pid, self.pid_pattern))
             return False
-        print("valid")
         return True
 
     def __str__(self):
@@ -83,11 +70,8 @@ def parse_passports(lines):
         if line == "":
             p = Passport()
             passports.append(p)
-            #print()
         else:
             p.apply(line)
-            #print(line)
-            #print(p)
     return passports
 
 def part1(lines):
@@ -96,10 +80,6 @@ def part1(lines):
 
 def part2(lines):
     passports = parse_passports(lines)
-    #'byr','iyr','eyr','hgt','hcl','ecl','pid','cid']))+"]"
-    invalid = [x for x in passports if not x.is_valid2()];
-
-    #return sum(p.attribute_count() for p in passports)
     return sum(1 for p in passports if p.is_valid2())
 
 sample = """ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
@@ -115,7 +95,7 @@ hgt:179cm
 
 hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in""".split("\n")
-#assert_equals(part1(sample), 2)
+assert_equals(part1(sample), 2)
 
 sample_invalid = """eyr:1972 cid:100
 hcl:#18171d ecl:amb hgt:170 pid:186cm iyr:2018 byr:1926
@@ -130,7 +110,7 @@ ecl:brn hgt:182cm pid:021572410 eyr:2020 byr:1992 cid:277
 hgt:59cm ecl:zzz
 eyr:2038 hcl:74454a iyr:2023
 pid:3556412378 byr:2007""".split("\n")
-#assert_equals(part2(sample_invalid), 0)
+assert_equals(part2(sample_invalid), 0)
 
 sample_valid = """pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
 hcl:#623a2f
@@ -144,9 +124,8 @@ pid:545766238 ecl:hzl
 eyr:2022
 
 iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719""".split("\n")
-#assert_equals(part2(sample_valid), 4)
+assert_equals(part2(sample_valid), 4)
 
 lines = read_file(sys.argv[0].replace("py", "input"))
-#print(part1(lines))
-print("##############################")
+print(part1(lines))
 print(part2(lines))
