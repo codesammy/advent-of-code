@@ -9,7 +9,7 @@ from util import read_file, assert_equals
 class Passport:
     keyvalue_pattern = re.compile("([^ :]+):([^ ]+)")
     hcl_pattern = re.compile("#[0-9a-f]{6}")
-    hgt_pattern = re.compile("([0-9]+)(.+)")
+    hgt_pattern = re.compile("([0-9]+)([^0-9]+)")
     pid_pattern = re.compile("[0-9]{9}")
 
     def apply(self, line):
@@ -45,11 +45,11 @@ class Passport:
             print("eyr %s is not [2020,2030]" % self.eyr)
             return False
         if not self.hcl_pattern.fullmatch(self.hcl):
-            print("hcl %s does match %s" %(self.hcl, self.hcl_pattern))
+            print("hcl %s does not match %s" %(self.hcl, self.hcl_pattern))
             return False
         m = self.hgt_pattern.fullmatch(self.hgt)
         if m == None:
-            print("hgt %s does match %s" %(self.hgt, self.hgt_pattern))
+            print("hgt %s does not match %s" %(self.hgt, self.hgt_pattern))
             return False
         else:
             hgt, unit = m.groups()
