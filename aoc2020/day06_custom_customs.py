@@ -16,6 +16,9 @@ class Group:
 
     def anyone_yes(self):
         return reduce(set.union, (p.answers for p in self.persons))
+
+    def everyone_yes(self):
+        return reduce(set.intersection, (p.answers for p in self.persons))
     
 def parse_groups(lines):
     groups = []
@@ -33,6 +36,10 @@ def part1(lines):
     groups = parse_groups(lines)
     return sum(map(len, map(Group.anyone_yes, groups)))
 
+def part2(lines):
+    groups = parse_groups(lines)
+    return sum(map(len, map(Group.everyone_yes, groups)))
+
 sample = """abc
 
 a
@@ -49,6 +56,8 @@ a
 
 b""".split("\n")
 assert_equals(part1(sample), 11)
+assert_equals(part2(sample), 6)
 
 lines = read_file(sys.argv[0].replace("py", "input"))
 print(part1(lines))
+print(part2(lines))
