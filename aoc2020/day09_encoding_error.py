@@ -17,7 +17,7 @@ def part1(lines, preamble):
 def part2(lines, preamble):
     weak = part1(lines, preamble)
     nums = [int(n) for n in lines]
-    return next(min(c)+max(c) for a in range(len(nums)) for b in range(a+1,len(nums)) for c in [nums[a:b]] if sum(c) == weak)
+    return next(min(c)+max(c) for a in range(len(nums)) for b in range(a+1,len(nums)) if sum(c := nums[a:b]) == weak)
 
 sample = """35
 20
