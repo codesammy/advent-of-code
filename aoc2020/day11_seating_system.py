@@ -33,7 +33,9 @@ class Cell:
 class Seat(Cell):
     def __init__(self, x, y, c):
         super(Seat, self).__init__(x, y, c)
+        # call compute everytime when c is changed
         self.compute()
+        self.occupation_tolerance = 4
 
     def compute(self):
         self.occupied = self.c == "#"
@@ -46,7 +48,7 @@ class Seat(Cell):
         c = "?"
         if not self.occupied and all(map(lambda c: c.occupied == False, self.neighbors)):
             c = "#"
-        elif self.occupied and sum((1 if c.occupied else 0 for c in self.neighbors )) >= 4:
+        elif self.occupied and sum((1 if c.occupied else 0 for c in self.neighbors )) >= self.occupation_tolerance:
             c = "L"
         else:
             c = self.c
@@ -62,6 +64,12 @@ class Seat(Cell):
         return "#" if self.occupied else "L"
 
 class SeatWithFarNeighbors(Seat):
+    def __init__(self, x, y, c):
+        super(Seat, self).__init__(x, y, c)
+        # call compute everytime when c is changed
+        self.compute()
+        self.occupation_tolerance = 5
+  
     def link(self, grid):
         self.grid = grid
         self.neighbors = []
@@ -82,17 +90,6 @@ class SeatWithFarNeighbors(Seat):
                         else:
                             break
                         i += 1
-
-    def next(self):
-        c = "?"
-        if not self.occupied and all(map(lambda c: c.occupied == False, self.neighbors)):
-            c = "#"
-        elif self.occupied and sum((1 if c.occupied else 0 for c in self.neighbors )) >= 5:
-            c = "L"
-        else:
-            c = self.c
-        self.next_c = c
-        return c
 
 class Floor(Cell):
     def __init__(self, x, y, c):
@@ -129,6 +126,7 @@ class Grid:
 
     def simulate(self):
         while True:
+            # alternative: set dirty flag when cell changed
             def changed(old, new):
                 for y, row in enumerate(self.rows):
                     for x, cell in enumerate(row):
