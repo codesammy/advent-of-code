@@ -118,7 +118,6 @@ class Waypoint:
 
     @classmethod
     def of(cls, vector):
-        #print(f"Waypoint.of({vector})")
         courses = []
         if vector[0] != 0:
             unit_ew = int(vector[0] / abs(vector[0]))
