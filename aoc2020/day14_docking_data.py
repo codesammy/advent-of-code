@@ -26,9 +26,7 @@ class FloatingBitMask:
         self.floating_nums = {reduce(or_, x) for x in combinations_with_replacement([2**i for i, b in enumerate(reversed(mask)) if b == 'X']+[0], mask.count('X'))}
 
     def apply(self, addr):
-        for num in self.floating_nums:
-            base_num = (addr | self.or_mask) & self.and_mask
-            yield base_num | num
+        yield from ((addr | self.or_mask) & self.and_mask | num for num in self.floating_nums)
 
 class MaskInstruction:
     def __init__(self, mask, mask_cls=BitMask):
