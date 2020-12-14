@@ -1,7 +1,7 @@
 import sys
 from operator import or_
 from functools import reduce
-from itertools import combinations_with_replacement, permutations
+from itertools import combinations_with_replacement
 import re
 sys.path.append('../')
 from util import read_file, assert_equals
