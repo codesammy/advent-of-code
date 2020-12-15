@@ -34,6 +34,9 @@ class MemoryGameNumbers:
                 res = abs(sub(*self.memory[self.last_num][-2:]))
 
         self.memory[res].append(self.turn)
+        # save memory for part2
+        if len(self.memory[res]) > 2:
+            self.memory[res] = self.memory[res][-2:]
         self.last_num = res
         self.spoken_count[res] += 1
         return res
@@ -49,8 +52,12 @@ def part1(line, nth_element):
     starting_numbers = parse_input(line)
     return next(x for i,x in enumerate(MemoryGameNumbers(starting_numbers)) if i==nth_element-1)
 
+part2 = part1
+
 sample1 = "0,3,6"
 assert_equals(part1(sample1, 2020), 436)
+assert_equals(part2(sample1, 30000000), 175594)
 
 line = "14,1,17,0,3,20"
 print(part1(line, 2020))
+print(part2(line, 30000000))
