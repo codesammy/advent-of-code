@@ -6,10 +6,6 @@ from lark import Lark, Transformer
 import math
 
 class PlusMulExprTransformer(Transformer):
-    def expr(self, items):
-        return items[0]
-    def parenthesized(self, items):
-        return items[0]
     def sum(self, items):
         return sum(items)
     def product(self, items):
@@ -20,12 +16,12 @@ class PlusMulExprTransformer(Transformer):
 # pip3 install lark-parser
 # https://github.com/lark-parser/lark/blob/master/lark/grammars/common.lark
 plus_mul_left_to_right = Lark('''
-        ?expr: parenthesized
-             | sop
-      ?number: NUMBER
-         ?sum: (sop "+")? (number | parenthesized)
-     ?product: (sop "*")? (number | parenthesized)
-         ?sop: sum | product
+         ?expr: parenthesized
+              | sop
+       ?number: NUMBER
+          ?sum: (sop "+")? (number | parenthesized)
+      ?product: (sop "*")? (number | parenthesized)
+          ?sop: sum | product
 ?parenthesized: "(" expr ")"
 %import common.NUMBER
 %import common.WS
@@ -33,12 +29,12 @@ plus_mul_left_to_right = Lark('''
 ''', start="expr")
 
 plus_before_mul = Lark('''
-        ?expr: parenthesized
-             | sop
-      ?number: NUMBER
-         ?sum: (sop "+")? (number | parenthesized)
-     ?product: (sop "*")? expr
-         ?sop: product | sum
+         ?expr: parenthesized
+              | sop
+       ?number: NUMBER
+          ?sum: (sop "+")? (number | parenthesized)
+      ?product: (sop "*")? expr
+          ?sop: product | sum
 ?parenthesized: "(" expr ")"
 %import common.NUMBER
 %import common.WS
