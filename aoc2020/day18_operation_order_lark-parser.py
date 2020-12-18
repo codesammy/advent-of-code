@@ -23,8 +23,8 @@ plus_mul_left_to_right = Lark('''
         ?expr: parenthesized
              | sop
       ?number: NUMBER
-         ?sum: (sop "+")? number | (sop "+")? parenthesized
-     ?product: (sop "*")? number | (sop "*")? parenthesized
+         ?sum: (sop "+")? (number | parenthesized)
+     ?product: (sop "*")? (number | parenthesized)
          ?sop: sum | product
 ?parenthesized: "(" expr ")"
 %import common.NUMBER
@@ -36,7 +36,7 @@ plus_before_mul = Lark('''
         ?expr: parenthesized
              | sop
       ?number: NUMBER
-         ?sum: (sop "+")? number | (sop "+")? parenthesized
+         ?sum: (sop "+")? (number | parenthesized)
      ?product: (sop "*")? expr
          ?sop: product | sum
 ?parenthesized: "(" expr ")"
