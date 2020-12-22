@@ -65,13 +65,13 @@ class Space:
                         cube = self.cubes_by_xyz[h]
                         special = False
                         if (x,y) == (0,0):
-                            res += "\033[32;1;m"
+                            res += "\033[0;32m"
                             special = True
                         elif (x,y,z) == target:
-                            res += "\033[31;1;m"
+                            res += "\033[0;31m"
                             special = True
                         elif cube in self.cubes_by_xyz[Cube.hash_xyz2(target)].neighbors:
-                            res += "\033[33;1;m"
+                            res += "\033[0;33m"
                             special = True
                         res += "#" if cube.active else "."
                         if special:
