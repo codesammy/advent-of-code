@@ -24,7 +24,6 @@ class Game:
     cups: List[Cup]
     max_value: int
     current_cup: Cup = field(init=False)
-    move_count: int = field(default=1)
     one: Cup = field(init=False)
     lookup_by_value: Dict[int, Cup] = field(init=False, default_factory=dict)
     debug: bool = field(init=False, default=False)
@@ -40,42 +39,39 @@ class Game:
             self.lookup_by_value[cup.value] = cup
 
     def move(self):
-        picked_up_cups = self.pick_up()
-        destination_cup = self.select_destination(picked_up_cups)
-        self.place_cups(destination_cup, picked_up_cups)
+        a, b, c, first_picked_up_cup, last_picked_up_cup = self.pick_up()
+        destination_cup = self.select_destination(a, b, c)
+        self.place_cups(destination_cup, first_picked_up_cup, last_picked_up_cup)
         if self.debug:
-            print(f"-- move {self.move_count} --")
             print(f"cups: {self}")
-            print(f"pick up: {self.__str__cups(picked_up_cups)}")
+            print(f"pick up: {str(a)}, {str(b)}, {str(c)}")
             print(f"destination: {destination_cup.label}")
         self.select_new_current_cup()
-        self.move_count += 1
 
-    def pick_up(self, amount=3):
-        picked_up_cups = [self.current_cup.next_cup]
-        picked_up_cups += [picked_up_cups[-1].next_cup]
-        picked_up_cups += [picked_up_cups[-1].next_cup]
+    def pick_up(self):
+        cup = self.current_cup
+        a = self.current_cup.next_cup
+        b = a.next_cup
+        c = b.next_cup
+        self.current_cup.next_cup = c.next_cup
+        return a.value, b.value, c.value, a, c
 
-        self.current_cup.next_cup = picked_up_cups[-1].next_cup
-        return picked_up_cups
-
-    def select_destination(self, picked_up_cups):
+    def select_destination(self, a, b, c):
         destination = None
-        start_value = self.current_cup.value - 1
-        picked_up_values = list(map(lambda c: c.value, picked_up_cups))
-        local_max_value = max(set(range(self.max_value-3,self.max_value+1))-set(picked_up_values))
+        destination_value = self.current_cup.value - 1
         while destination == None:
-            if start_value == 0:
-                start_value = local_max_value
-            if start_value not in picked_up_values:
-                destination = start_value
-            start_value -= 1
+            if destination_value == 0:
+                destination_value = self.max_value
+            if destination_value != a and destination_value != b and destination_value != c:
+                destination = destination_value
+                break
+            destination_value -= 1
         return self.lookup_by_value[destination]
 
-    def place_cups(self, destination_cup, picked_up_cups):
+    def place_cups(self, destination_cup, first_picked_up_cup, last_picked_up_cup):
         temp = destination_cup.next_cup
-        destination_cup.next_cup = picked_up_cups[0]
-        picked_up_cups[-1].next_cup = temp
+        destination_cup.next_cup = first_picked_up_cup
+        last_picked_up_cup.next_cup = temp
 
     def select_new_current_cup(self):
         self.current_cup = self.current_cup.next_cup
