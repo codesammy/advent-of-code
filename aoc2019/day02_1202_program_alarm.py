@@ -1,15 +1,18 @@
 import sys
 sys.path.append('../')
 from util import read_file_one_string, assert_equals
-
+from collections import deque
 from dataclasses import dataclass, field
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, List, Deque
 import math
 
 @dataclass
 class OpCode:
-    intcode: type
+    intcode: type = field(repr=False)
     parameter_modes: List[int] = field(init=False)
+
+    def __post_init__(self):
+        self.parameter_modes = [0, 0, 0]
 
     def execute(self):
         pass
@@ -47,21 +50,40 @@ class OpCode2(OpCode):
 @dataclass
 class IntCode:
     memory: List[int]
-    input: Iterable = field(default_factory=list)
+    input: Deque[int] = field(default_factory=deque)
+    output: Deque[int] = field(default_factory=deque)
     ip: int = field(init=False, default=0)
     opcodes: Dict[int, OpCode] = field(init=False, default_factory=dict)
-    output: str = field(init=False, default="")
+    exited: bool = field(init=False, default=False)
 
     def __post_init__(self):
         self.opcodes[1] = OpCode1(self)
         self.opcodes[2] = OpCode2(self)
+        if self.input:
+            d = deque(self.input)
+            self.input = d
 
-    def run(self):
-        while (value := self.memory[self.ip]) != 99:
+    def add_input(self, value):
+        self.input.append(value)
+
+    def get_output(self):
+        try:
+            return self.output.popleft()
+        except IndexError:
+            return None
+
+    def run(self, stop_after=99):
+        while value := self.memory[self.ip]:
             opcode_num = value % 100
+            if opcode_num == 99:
+                self.exited = True
+                raise StopIteration
+                break
             opcode = self.opcodes[opcode_num]
             opcode.parameter_modes = [value//100%10, value//1000%10, value//10000%10]
             opcode.execute()
+            if opcode_num == stop_after:
+                break
 
 def parse_input(text):
     return list(map(int, text.split(',')))
@@ -72,7 +94,10 @@ def part1(text, noun=None, verb=None):
         state[1] = noun
         state[2] = verb
     program = IntCode(state)
-    program.run()
+    try:
+        program.run()
+    except StopIteration:
+        pass
     return program.memory[0]
 
 def part2(text):
