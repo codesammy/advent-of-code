@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../')
 from util import read_file_one_string, assert_equals
-from collections import deque
+from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Deque
 import math
@@ -23,6 +23,9 @@ class OpCode:
         if self.parameter_modes[i] == 0:
             # position mode
             idx = self.intcode.memory[self.intcode.ip + i + 1]
+        elif self.parameter_modes[i] == 2:
+            # relateive mode
+            idx = self.intcode.rb + self.intcode.memory[self.intcode.ip + i + 1]
         return idx
 
     def get_operand(self, i):
@@ -49,12 +52,13 @@ class OpCode2(OpCode):
 
 @dataclass
 class IntCode:
-    memory: List[int]
+    memory: Dict[int, int]
     input: Deque[int] = field(default_factory=deque)
     output: Deque[int] = field(default_factory=deque)
     ip: int = field(init=False, default=0)
     opcodes: Dict[int, OpCode] = field(init=False, default_factory=dict)
     exited: bool = field(init=False, default=False)
+    rb: int = field(init=False, default=0)
 
     def __post_init__(self):
         self.opcodes[1] = OpCode1(self)
@@ -68,7 +72,7 @@ class IntCode:
 
     def get_output(self):
         try:
-            return self.output.popleft()
+            return self.output.pop()
         except IndexError:
             return None
 
@@ -86,7 +90,7 @@ class IntCode:
                 break
 
 def parse_input(text):
-    return list(map(int, text.split(',')))
+    return defaultdict(lambda: 0, enumerate(map(int, text.split(','))))
 
 def part1(text, noun=None, verb=None):
     state = parse_input(text)
