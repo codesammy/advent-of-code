@@ -32,6 +32,8 @@ def part1(text, input):
         pass
     return ",".join(map(str, list(program.output)))
 
+part2 = part1
+
 class Test(TestCase):
 
     def runTest(self):
@@ -46,3 +48,4 @@ if __name__ == '__main__' or True:
     # find the layer that contains the fewest 0 digits
     # On that layer, what is the number of 1 digits multiplied by the number of 2 digits?
     print(part1(inputtext, [1]))
+    print(part2(inputtext, [2]))
