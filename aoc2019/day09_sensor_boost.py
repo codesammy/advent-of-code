@@ -42,7 +42,7 @@ class Test(TestCase):
         self.assertEqual(part1("1102,34915192,34915192,7,4,7,99,0", []), "1219070632396864")
         self.assertEqual(part1("104,1125899906842624,99", []), "1125899906842624")
 
-if __name__ == '__main__' or True:
+if __name__ == '__main__':
     Test().debug()
     inputtext = Path(sys.argv[0].replace("py", "input")).read_text().strip()
     # find the layer that contains the fewest 0 digits
