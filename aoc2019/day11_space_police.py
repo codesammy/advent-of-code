@@ -13,11 +13,12 @@ sys.path.append('.')
 from day09_sensor_boost import IntCode3
 from day02_1202_program_alarm import OpCode, parse_input
 
-def part1(text):
+def run_robot(text, hull=None):
     state = parse_input(text)
     # 0 black
     # 1 white
-    hull = defaultdict(lambda: 0)
+    if not hull:
+        hull = defaultdict(lambda: 0)
     painted_panels = set()
     try:
         robot = IntCode3(state, iter([]))
@@ -44,9 +45,31 @@ def part1(text):
             # move forward
             robot.pos = (robot.pos[0] + robot.orientation[0], robot.pos[1] + robot.orientation[1])
     except StopIteration as e:
-        return len(painted_panels)
+        return painted_panels
+
+def part1(text):
+    painted_panels = run_robot(text)
+    return len(painted_panels)
+
+def part2(text):
+    hull = defaultdict(lambda: 0)
+    hull[(0, 0)] = 1
+    painted_panels = defaultdict(lambda: 0)
+    for p in run_robot(text, hull):
+        painted_panels[p] = hull[p]
+    min_x = min(x for x,y in painted_panels)
+    max_x = max(x for x,y in painted_panels)
+    min_y = min(y for x,y in painted_panels)
+    max_y = max(y for x,y in painted_panels)
+    hull_text = ""
+    for y in range(min_y, max_y+1):
+        for x in range(min_x, max_x+1):
+            hull_text += "#" if painted_panels[(x, y)] else " "
+        hull_text += "\n"
+    return hull_text
 
 if __name__ == '__main__':
     inputtext = Path(sys.argv[0].replace("py", "input")).read_text().strip()
     # How many panels does it paint at least once?
     print(part1(inputtext))
+    print(part2(inputtext))
